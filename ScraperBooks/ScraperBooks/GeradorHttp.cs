@@ -1,4 +1,10 @@
 ﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Xml;
+using System.Xml.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 public class GeradorHttp
 {
@@ -9,7 +15,7 @@ public class GeradorHttp
     {
         this.httpClient = new();
         this.documento = new();
-        string html = this.httpClient.GetStringAsync(Constantes.URL_BOOKS).GetAwaiter().GetResult();
+        string html = this.httpClient.GetStringAsync(Environment.GetEnvironmentVariable("URL_BOOKS")).GetAwaiter().GetResult();
         this.documento.LoadHtml(html);
         this.Categorias = new();
     }
@@ -31,7 +37,7 @@ public class GeradorHttp
         }
         while (true)
         {
-            HtmlNode? categoria = NodeQueTemCategoria.ChildNodes.Nodes().FirstOrDefault(n => n.InnerText.Contains(Constantes.ALGUMA_CATEGORIA));
+            HtmlNode? categoria = NodeQueTemCategoria.ChildNodes.Nodes().FirstOrDefault(n => n.InnerText.Contains(Environment.GetEnvironmentVariable("ALGUMA_CATEGORIA") ?? "Travel"));
             if (categoria is null) //Tratar loop infinito
             {
                 break;
@@ -59,7 +65,7 @@ public class GeradorHttp
         {
             throw new Exception($"Não há categoria no índice {indiceCategoria}");
         }
-        string resposta = this.httpClient.GetStringAsync(Constantes.URL_BOOKS + categoria.Value.Value).GetAwaiter().GetResult();
+        string resposta = this.httpClient.GetStringAsync(Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value).GetAwaiter().GetResult();
         HtmlDocument documento = new();
         documento.LoadHtml(resposta);
         HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(XPath.PRODUTO_LIVRO);
@@ -71,45 +77,13 @@ public class GeradorHttp
             ProdutoLivro produtoLivro = new()
             {
                 Titulo = titulo,
-                Preco = ConvertePreco(preco),
-                Rating = ConverteRating(ratingEstrelas),
+                Preco = Conversor.ConvertePreco(preco),
+                Rating = Conversor.ConverteRating(ratingEstrelas),
                 Categoria = categoria.Value.Key,
-                URL = Constantes.URL_BOOKS + categoria.Value.Value
+                URL = Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value
             };
             produtos.Add(produtoLivro);
         }
         return produtos;
-    }
-
-    private decimal ConvertePreco(string preco)
-    {
-        string precoLimpo = preco.Split("£")[1].Split("\n")[0];
-        if (decimal.TryParse(precoLimpo, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal resultDecimal))
-        {
-            return resultDecimal;
-        }
-        throw new Exception($"Falha ao converter o preço {preco}");
-    }
-
-    private int ConverteRating(string ratingEstrelas)
-    {
-        string[] ratingArray = ratingEstrelas.Split("star-rating ");
-        string rating = ratingArray.Count() > 0 ? ratingArray[1] : ratingArray[0];
-        switch (rating.ToUpper())
-        {
-            case "ONE":
-                return 1;
-            case "TWO":
-                return 2;
-            case "THREE":
-                return 3;
-            case "FOUR":
-                return 4;
-            case "FIVE":
-                return 5;
-            default:
-                Console.WriteLine($"Falha ao converter {rating} como rating");
-                return 0;
-        }
     }
 }

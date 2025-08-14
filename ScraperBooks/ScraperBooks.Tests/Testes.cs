@@ -9,6 +9,8 @@
         public void OneTimeSetUp()
         {
             Console.WriteLine(DateTime.Now);
+            string? teste = Environment.GetEnvironmentVariable("URL_BOOKS");
+            string? ALGUMA_CATEGORIA = Environment.GetEnvironmentVariable("ALGUMA_CATEGORIA");
             this.geradorHttp = new();
             this.geradorHttp.CarregaCategorias();
         }
@@ -26,7 +28,7 @@
                         Assert.Fail("Link vazio");
 
                     }
-                    string link = Constantes.URL_BOOKS + linkCategoria;
+                    string link = Environment.GetEnvironmentVariable("URL_BOOKS") + linkCategoria;
                     if (!geradorHttp.LinkValido(link))
                     {
                         Assert.Fail($"Não foi possível abrir o link {link}");
@@ -38,17 +40,33 @@
         [Test]
         public void CarregaUmaCategoria()
         {
+            List<ProdutoLivro>? categoriaTravel = null;
             Assert.Multiple(() =>
             {
-                List<ProdutoLivro> categoriaTravel = this.geradorHttp.CarregaUmaCategoria(0);
+                categoriaTravel = this.geradorHttp.CarregaUmaCategoria(0);
                 Assert.That(categoriaTravel.Count > 10, "Quantidade baixa");
                 Assert.That(categoriaTravel[0].Categoria == "Travel", "Categoria Travel incorreta");
+            });
+            Assert.Multiple(() =>
+            {
                 List<ProdutoLivro> categoriaMystery = this.geradorHttp.CarregaUmaCategoria(1);
                 Assert.That(categoriaMystery.Count > 10, "Quantidade baixa");
                 Assert.That(categoriaMystery[0].Categoria == "Mystery", "Categoria Mystery incorreta");
+            });
+            Assert.Multiple(() =>
+            {
                 List<ProdutoLivro> categoriaHistoricalFiction = this.geradorHttp.CarregaUmaCategoria(2);
                 Assert.That(categoriaHistoricalFiction.Count > 10, "Quantidade baixa");
                 Assert.That(categoriaHistoricalFiction[0].Categoria == "Historical Fiction", "Categoria Historical Fiction incorreta");
+            });
+            Assert.Multiple(() =>
+            {
+                string xml = Conversor.SeralizaXML(categoriaTravel);
+                string json = Conversor.SeralizaJson(categoriaTravel);
+                Assert.That(xml.Length > 10, "Provavelmente não converteu");
+                Assert.That(xml.StartsWith("<?xml version="), "Não possui o início de xml");
+                Assert.That(json.Length > 10, "Provavelmente não converteu");
+                Assert.That(json.StartsWith("[{\"Titulo\":\""), "Não possui o início de json");
             });
         }
     }
