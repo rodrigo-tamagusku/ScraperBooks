@@ -59,21 +59,57 @@ public class GeradorHttp
         {
             throw new Exception($"Não há categoria no índice {indiceCategoria}");
         }
-        string resposta = this.httpClient.GetStringAsync(Constantes.URL_BOOKS+categoria.Value.Value).GetAwaiter().GetResult();
+        string resposta = this.httpClient.GetStringAsync(Constantes.URL_BOOKS + categoria.Value.Value).GetAwaiter().GetResult();
         HtmlDocument documento = new();
         documento.LoadHtml(resposta);
-        HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(Constantes.XPATH_LIVRO);
+        HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(XPath.PRODUTO_LIVRO);
         foreach (HtmlNode livro in livros)
         {
+            string preco = livro.SelectNodes(XPath.PRODUTO_LIVRO_PRECO)[0].InnerText;
+            string titulo = livro.SelectNodes(XPath.PRODUTO_LIVRO_TITULO)[0].InnerText.Trim();
+            string ratingEstrelas = livro.SelectNodes(XPath.PRODUTO_LIVRO_RATING)[0].GetAttributeValue("class", "");
             ProdutoLivro produtoLivro = new()
             {
-                Titulo = "",
-                Preco = 10,
-                Rating = 10,
+                Titulo = titulo,
+                Preco = ConvertePreco(preco),
+                Rating = ConverteRating(ratingEstrelas),
                 Categoria = categoria.Value.Key,
                 URL = Constantes.URL_BOOKS + categoria.Value.Value
             };
+            produtos.Add(produtoLivro);
         }
         return produtos;
+    }
+
+    private decimal ConvertePreco(string preco)
+    {
+        string precoLimpo = preco.Split("£")[1].Split("\n")[0];
+        if (decimal.TryParse(precoLimpo, out decimal resultDecimal))
+        {
+            return resultDecimal;
+        }
+        throw new Exception($"Falha ao converter o preço {preco}");
+    }
+
+    private int ConverteRating(string ratingEstrelas)
+    {
+        string[] ratingArray = ratingEstrelas.Split("star-rating ");
+        string rating = ratingArray.Count() > 0 ? ratingArray[1] : ratingArray[0];
+        switch (rating.ToUpper())
+        {
+            case "ONE":
+                return 1;
+            case "TWO":
+                return 2;
+            case "THREE":
+                return 3;
+            case "FOUR":
+                return 4;
+            case "FIVE":
+                return 5;
+            default:
+                Console.WriteLine($"Falha ao converter {rating} como rating");
+                return 0;
+        }
     }
 }
