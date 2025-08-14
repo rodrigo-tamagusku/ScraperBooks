@@ -63,14 +63,16 @@ public class GeradorHttp
         HtmlDocument documento = new();
         documento.LoadHtml(resposta);
         HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(Constantes.XPATH_LIVRO);
-        foreach (var livro in livros)
+        foreach (HtmlNode livro in livros)
         {
-            ProdutoLivro produtoLivro = new();
-            produtoLivro.Titulo = "";
-            produtoLivro.Preco = 10;
-            produtoLivro.Rating = 10;
-            produtoLivro.Categoria = categoria.Value.Key;
-            produtoLivro.URL = Constantes.URL_BOOKS + categoria.Value.Value;
+            ProdutoLivro produtoLivro = new()
+            {
+                Titulo = "",
+                Preco = 10,
+                Rating = 10,
+                Categoria = categoria.Value.Key,
+                URL = Constantes.URL_BOOKS + categoria.Value.Value
+            };
         }
         return produtos;
     }
