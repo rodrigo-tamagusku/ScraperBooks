@@ -84,7 +84,7 @@ public class GeradorHttp
     private decimal ConvertePreco(string preco)
     {
         string precoLimpo = preco.Split("£")[1].Split("\n")[0];
-        if (decimal.TryParse(precoLimpo, out decimal resultDecimal))
+        if (decimal.TryParse(precoLimpo, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal resultDecimal))
         {
             return resultDecimal;
         }

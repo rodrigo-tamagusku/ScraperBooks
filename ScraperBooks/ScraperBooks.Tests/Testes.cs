@@ -1,6 +1,4 @@
-﻿using NUnit;
-
-namespace ScraperBooks.Tests
+﻿namespace ScraperBooks.Tests
 {
     [TestFixture]
     public class Tests
@@ -42,9 +40,15 @@ namespace ScraperBooks.Tests
         {
             Assert.Multiple(() =>
             {
-                this.geradorHttp.CarregaUmaCategoria(1);
-                this.geradorHttp.CarregaUmaCategoria(2);
-                this.geradorHttp.CarregaUmaCategoria(3);
+                List<ProdutoLivro> categoriaTravel = this.geradorHttp.CarregaUmaCategoria(0);
+                Assert.That(categoriaTravel.Count > 10, "Quantidade baixa");
+                Assert.That(categoriaTravel[0].Categoria == "Travel", "Categoria Travel incorreta");
+                List<ProdutoLivro> categoriaMystery = this.geradorHttp.CarregaUmaCategoria(1);
+                Assert.That(categoriaMystery.Count > 10, "Quantidade baixa");
+                Assert.That(categoriaMystery[0].Categoria == "Mystery", "Categoria Mystery incorreta");
+                List<ProdutoLivro> categoriaHistoricalFiction = this.geradorHttp.CarregaUmaCategoria(2);
+                Assert.That(categoriaHistoricalFiction.Count > 10, "Quantidade baixa");
+                Assert.That(categoriaHistoricalFiction[0].Categoria == "Historical Fiction", "Categoria Historical Fiction incorreta");
             });
         }
     }
