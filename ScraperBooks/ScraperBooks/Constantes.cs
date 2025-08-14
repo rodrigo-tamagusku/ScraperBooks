@@ -1,6 +1,7 @@
-﻿public class Constantes
+﻿public static class Constantes
 {
-    public const string URL_BOOKS = "https://books.toscrape.com/";
-    public const string ALGUMA_CATEGORIA = "Sequential Art";
-    public const string PRE_URL = "\"";
+    public static string URL_BOOKS { get => "https://books.toscrape.com/"; }
+    public static string ALGUMA_CATEGORIA { get => "Sequential Art"; }
+    public static string PRE_URL { get => "\""; }
+    public static string XPATH_LIVRO { get => "//article[@class='product_pod']"; }
 }

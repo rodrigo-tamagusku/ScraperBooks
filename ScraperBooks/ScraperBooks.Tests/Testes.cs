@@ -38,14 +38,13 @@ namespace ScraperBooks.Tests
         }
 
         [Test]
-        public void CarregaPaginaCategoria()
+        public void CarregaUmaCategoria()
         {
             Assert.Multiple(() =>
             {
-                foreach (KeyValuePair<string, string> categoria in this.geradorHttp.Categorias.Take(3).ToList())
-                {
-
-                }
+                this.geradorHttp.CarregaUmaCategoria(1);
+                this.geradorHttp.CarregaUmaCategoria(2);
+                this.geradorHttp.CarregaUmaCategoria(3);
             });
         }
     }

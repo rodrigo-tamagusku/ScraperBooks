@@ -32,7 +32,7 @@ public class GeradorHttp
         while (true)
         {
             HtmlNode? categoria = NodeQueTemCategoria.ChildNodes.Nodes().FirstOrDefault(n => n.InnerText.Contains(Constantes.ALGUMA_CATEGORIA));
-            if (categoria is null)
+            if (categoria is null) //Tratar loop infinito
             {
                 break;
             }
@@ -49,5 +49,29 @@ public class GeradorHttp
                 Console.WriteLine(categoriaTexto);
             }
         }
+    }
+
+    public List<ProdutoLivro> CarregaUmaCategoria(int indiceCategoria)
+    {
+        List<ProdutoLivro> produtos = new();
+        KeyValuePair<string, string>? categoria = this.Categorias.ElementAtOrDefault(indiceCategoria);
+        if (categoria is null || !categoria.HasValue)
+        {
+            throw new Exception($"Não há categoria no índice {indiceCategoria}");
+        }
+        string resposta = this.httpClient.GetStringAsync(Constantes.URL_BOOKS+categoria.Value.Value).GetAwaiter().GetResult();
+        HtmlDocument documento = new();
+        documento.LoadHtml(resposta);
+        HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(Constantes.XPATH_LIVRO);
+        foreach (var livro in livros)
+        {
+            ProdutoLivro produtoLivro = new();
+            produtoLivro.Titulo = "";
+            produtoLivro.Preco = 10;
+            produtoLivro.Rating = 10;
+            produtoLivro.Categoria = categoria.Value.Key;
+            produtoLivro.URL = Constantes.URL_BOOKS + categoria.Value.Value;
+        }
+        return produtos;
     }
 }
