@@ -22,7 +22,11 @@ Inicialize as seguintes variáveis de ambiente:
 	ALGUMA_CATEGORIA="Sequential Art"
 	URL_BOOKS="https://books.toscrape.com/"
 
-Compile e executa a solução "ScraperBooks".
+Compile e executa a solução "ScraperBooks" como console.
+Exemplo de execução:
+
+<img width="1052" height="592" alt="image" src="https://github.com/user-attachments/assets/9f893497-e173-4679-a58e-898d4313d935" />
+
 
 Exemplo de books.xml gerado:
 
