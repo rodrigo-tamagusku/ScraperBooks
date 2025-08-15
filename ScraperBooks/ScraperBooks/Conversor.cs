@@ -90,4 +90,24 @@ public static class Conversor
                 return 0;
         }
     }
+
+    public static bool ValidaFiltros(ProdutoLivro produtoLivro)
+    {
+        if (decimal.TryParse(Environment.GetEnvironmentVariable("FILTRO_PRECO_MINIMO"), out decimal precoMinimo) &&
+            produtoLivro.Preco < precoMinimo)
+        {
+            return false;
+        }
+        if (decimal.TryParse(Environment.GetEnvironmentVariable("FILTRO_PRECO_MAXIMO"), out decimal precoMaximo) &&
+            produtoLivro.Preco > precoMaximo)
+        {
+            return false;
+        }
+        if (int.TryParse(Environment.GetEnvironmentVariable("FILTRO_RATING"), out int ratingExato) &&
+            (produtoLivro.Rating != ratingExato))
+        {
+            return false;
+        }
+        return true;
+    }
 }

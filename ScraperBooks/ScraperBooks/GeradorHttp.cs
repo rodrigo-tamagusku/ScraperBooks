@@ -90,7 +90,10 @@ public class GeradorHttp : IGeradorHttp
                 Categoria = categoria.Value.Key,
                 URL = Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value
             };
-            produtos.Add(produtoLivro);
+            if (Conversor.ValidaFiltros(produtoLivro))
+            {
+                produtos.Add(produtoLivro);
+            }
         }
         return produtos;
     }
