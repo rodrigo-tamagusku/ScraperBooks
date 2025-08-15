@@ -45,6 +45,7 @@ namespace ScraperBooks.Tests
         {
             List<ProdutoLivro>? categoriaTravel = null;
             string json = "";
+            string xml = "";
             Assert.Multiple(() =>
             {
                 categoriaTravel = this.geradorHttp.CarregaUmaCategoria(0);
@@ -65,17 +66,22 @@ namespace ScraperBooks.Tests
             });
             Assert.Multiple(() =>
             {
-                string xml = Conversor.SeralizaXML(categoriaTravel);
+                xml = Conversor.SeralizaXML(categoriaTravel);
                 json = Conversor.SeralizaJson(categoriaTravel);
                 Assert.That(xml.Length, Is.AtLeast(10), "Provavelmente não converteu");
                 Assert.That(xml.StartsWith("<?xml version="), "Não possui o início de xml");
                 Assert.That(json.Length, Is.AtLeast(10), "Provavelmente não converteu");
                 string inicioJson = "[\r\n  {\r\n    \"Titulo\": ";
                 Assert.That(json.StartsWith(inicioJson), "Não possui o início de json");
+
+            });
+            Assert.Multiple(() =>
+            {
                 XmlDocument xmlDocument = Conversor.GeraXmlDocument(xml);
                 Conversor.SalvaXmlDocument(xmlDocument);
                 Assert.That(xmlDocument.InnerText.Length, Is.AtLeast(10), "Provavelmente não converteu para xml document");
                 Assert.That(xmlDocument.InnerXml.StartsWith("<?xml version="), "Não possui o início de xml document");
+                Conversor.SalvaTexto(json,"books.json");
 
             });
             HttpStatusCode resultado = geradorHttp.EnviaPost(json);

@@ -17,6 +17,14 @@ public static class Conversor
         return xml;
     }
 
+    public static void SalvaTexto(string texto, string nomeArquivo)
+    {
+        using (StreamWriter writetext = new StreamWriter(nomeArquivo))
+        {
+            writetext.WriteLine(texto);
+        }
+    }
+
     public static void SalvaXmlDocument(XmlDocument xml)
     {
         xml.Save("books.xml");
