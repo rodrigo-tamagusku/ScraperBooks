@@ -73,7 +73,16 @@ public class GeradorHttp : IGeradorHttp
         {
             throw new Exception($"Não há categoria no índice {indiceCategoria}");
         }
-        string resposta = this.httpClient.GetStringAsync(Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value).GetAwaiter().GetResult();
+        string produtoTotal = (Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value);
+        string paginaAtual = produtoTotal.Split("/").LastOrDefault() ?? "";
+        string produtoAtual = produtoTotal.Split(paginaAtual)[0];
+        AdicionaProdutosPagina(ref produtos, categoria, produtoAtual, paginaAtual);
+        return produtos;
+    }
+
+    private void AdicionaProdutosPagina(ref List<ProdutoLivro> produtos, KeyValuePair<string, string>? categoria, string produtoAtual, string paginaAtual)
+    {
+        string resposta = this.httpClient.GetStringAsync(produtoAtual + paginaAtual).GetAwaiter().GetResult();
         HtmlDocument documento = new();
         documento.LoadHtml(resposta);
         HtmlNodeCollection livros = documento.DocumentNode.SelectNodes(XPath.PRODUTO_LIVRO);
@@ -95,7 +104,19 @@ public class GeradorHttp : IGeradorHttp
                 produtos.Add(produtoLivro);
             }
         }
-        return produtos;
+        HtmlNodeCollection proximaPagina = documento.DocumentNode.SelectNodes(XPath.PRODUTO_PROXIMA_PAGINA);
+        if (proximaPagina is not null)
+        {
+            foreach (HtmlNode livro in proximaPagina)
+            {
+                if (livro.InnerText.Equals(Constantes.NEXT))
+                {
+                    string URLFimDePagina = livro.OuterHtml.Split(Constantes.PRE_URL)[1];
+                    Console.WriteLine($"[{DateTime.Now}] [{categoria.Value.Key}] Página nova {URLFimDePagina} encontrada");
+                    AdicionaProdutosPagina(ref produtos, categoria, produtoAtual, URLFimDePagina);
+                }
+            }
+        }
     }
 
     public HttpStatusCode EnviaPost(string envio)

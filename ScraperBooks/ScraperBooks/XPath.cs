@@ -4,4 +4,5 @@
     public static string PRODUTO_LIVRO_PRECO { get => "div[@class='product_price']"; }
     public static string PRODUTO_LIVRO_TITULO { get => "h3/a[@title]"; }
     public static string PRODUTO_LIVRO_RATING { get => "p[contains(@class, 'star-rating')]"; }
+    public static string PRODUTO_PROXIMA_PAGINA { get => "//a[contains(@href, 'page')]"; }
 }

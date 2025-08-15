@@ -4,6 +4,7 @@ using System.Xml;
 namespace ScraperBooks.Tests
 {
     [TestFixture]
+    [NonParallelizable]
     public class Tests
     {
         private GeradorHttp geradorHttp;
@@ -12,9 +13,6 @@ namespace ScraperBooks.Tests
         public void OneTimeSetUp()
         {
             Console.WriteLine(DateTime.Now);
-            Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "15");
-            Environment.SetEnvironmentVariable("FILTRO_PRECO_MAXIMO", "55");
-            Environment.SetEnvironmentVariable("FILTRO_RATING", "3");
 
             this.geradorHttp = new();
             this.geradorHttp.CarregaCategorias();
@@ -23,6 +21,9 @@ namespace ScraperBooks.Tests
         [Test]
         public void CarregaCategorias()
         {
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "15");
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MAXIMO", "55");
+            Environment.SetEnvironmentVariable("FILTRO_RATING", "3");
             Assert.That(this.geradorHttp.Categorias.Count >= 50, "Não achou a quantidade esperada de categorias");
             Assert.Multiple(() =>
             {
@@ -45,6 +46,9 @@ namespace ScraperBooks.Tests
         [Test]
         public void CarregaUmaCategoria()
         {
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "15");
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MAXIMO", "55");
+            Environment.SetEnvironmentVariable("FILTRO_RATING", "3");
             List<ProdutoLivro>? categoriaTravel = null;
             string json = "";
             string xml = "";
@@ -88,6 +92,21 @@ namespace ScraperBooks.Tests
             });
             HttpStatusCode resultado = geradorHttp.EnviaPost(json);
             Assert.That(resultado, Is.EqualTo(HttpStatusCode.OK), "Ocorreu algum erro no Post");
+        }
+
+        [Test]
+        public void CarregaUmaCategoriaComPaginas()
+        {
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "");
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MAXIMO", "");
+            Environment.SetEnvironmentVariable("FILTRO_RATING", "");
+            List<ProdutoLivro>? categoriaSequentialArt = null;
+            Assert.Multiple(() =>
+            {
+                categoriaSequentialArt = this.geradorHttp.CarregaUmaCategoria(3);
+                Assert.That(categoriaSequentialArt.Count, Is.AtLeast(41), "Quantidade baixa");
+                Assert.That(categoriaSequentialArt[0].Categoria, Is.EqualTo("Sequential Art"), "Categoria Sequential Art incorreta");
+            });
         }
     }
 }
