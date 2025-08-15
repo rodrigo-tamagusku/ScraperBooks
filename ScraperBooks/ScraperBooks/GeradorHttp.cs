@@ -1,5 +1,9 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml;
@@ -85,5 +89,16 @@ public class GeradorHttp
             produtos.Add(produtoLivro);
         }
         return produtos;
+    }
+
+    public HttpStatusCode EnviaPost(string envio)
+    {
+        HttpContent content = new StringContent(envio, Encoding.UTF8, "application/json");
+        string url = Constantes.HTTP_BIN_POST;
+        Console.WriteLine($"[{DateTime.Now}]POST solicitado para {url}");
+        Console.WriteLine($"Conteúdo do POST: {envio}");
+        HttpResponseMessage response = this.httpClient.PostAsync(url, content).Result;
+        Console.WriteLine($"Resultado: {response.ToString()}");
+        return response.StatusCode;
     }
 }

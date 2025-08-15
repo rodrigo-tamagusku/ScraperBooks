@@ -1,4 +1,6 @@
-﻿namespace ScraperBooks.Tests
+﻿using System.Net;
+
+namespace ScraperBooks.Tests
 {
     [TestFixture]
     public class Tests
@@ -41,33 +43,36 @@
         public void CarregaUmaCategoria()
         {
             List<ProdutoLivro>? categoriaTravel = null;
+            string json = "";
             Assert.Multiple(() =>
             {
                 categoriaTravel = this.geradorHttp.CarregaUmaCategoria(0);
-                Assert.That(categoriaTravel.Count > 10, "Quantidade baixa");
-                Assert.That(categoriaTravel[0].Categoria == "Travel", "Categoria Travel incorreta");
+                Assert.That(categoriaTravel.Count, Is.AtLeast(10), "Quantidade baixa");
+                Assert.That(categoriaTravel[0].Categoria, Is.EqualTo("Travel"), "Categoria Travel incorreta");
             });
             Assert.Multiple(() =>
             {
                 List<ProdutoLivro> categoriaMystery = this.geradorHttp.CarregaUmaCategoria(1);
-                Assert.That(categoriaMystery.Count > 10, "Quantidade baixa");
-                Assert.That(categoriaMystery[0].Categoria == "Mystery", "Categoria Mystery incorreta");
+                Assert.That(categoriaMystery.Count, Is.AtLeast(10), "Quantidade baixa");
+                Assert.That(categoriaMystery[0].Categoria, Is.EqualTo("Mystery"), "Categoria Mystery incorreta");
             });
             Assert.Multiple(() =>
             {
                 List<ProdutoLivro> categoriaHistoricalFiction = this.geradorHttp.CarregaUmaCategoria(2);
-                Assert.That(categoriaHistoricalFiction.Count > 10, "Quantidade baixa");
-                Assert.That(categoriaHistoricalFiction[0].Categoria == "Historical Fiction", "Categoria Historical Fiction incorreta");
+                Assert.That(categoriaHistoricalFiction.Count, Is.AtLeast(10), "Quantidade baixa");
+                Assert.That(categoriaHistoricalFiction[0].Categoria, Is.EqualTo("Historical Fiction"), "Categoria Historical Fiction incorreta");
             });
             Assert.Multiple(() =>
             {
                 string xml = Conversor.SeralizaXML(categoriaTravel);
-                string json = Conversor.SeralizaJson(categoriaTravel);
-                Assert.That(xml.Length > 10, "Provavelmente não converteu");
+                json = Conversor.SeralizaJson(categoriaTravel);
+                Assert.That(xml.Length, Is.AtLeast(10), "Provavelmente não converteu");
                 Assert.That(xml.StartsWith("<?xml version="), "Não possui o início de xml");
-                Assert.That(json.Length > 10, "Provavelmente não converteu");
+                Assert.That(json.Length, Is.AtLeast(10), "Provavelmente não converteu");
                 Assert.That(json.StartsWith("[{\"Titulo\":\""), "Não possui o início de json");
             });
+            HttpStatusCode resultado = geradorHttp.EnviaPost(json);
+            Assert.That(resultado, Is.EqualTo(HttpStatusCode.OK), "Ocorreu algum erro no Post");
         }
     }
 }
