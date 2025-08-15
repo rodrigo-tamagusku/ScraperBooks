@@ -1,14 +1,6 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
-using System.Diagnostics;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Xml;
-using System.Xml.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 public class GeradorHttp
 {
@@ -59,6 +51,16 @@ public class GeradorHttp
                 Console.WriteLine(categoriaTexto);
             }
         }
+    }
+
+    public List<ProdutoLivro> CarregaTodosProdutos()
+    {
+        List<ProdutoLivro> produtos = new();
+        for (int indice = 0; indice < this.Categorias.Count; indice++)
+        {
+            produtos.AddRange(this.CarregaUmaCategoria(indice));
+        }
+        return produtos;
     }
 
     public List<ProdutoLivro> CarregaUmaCategoria(int indiceCategoria)

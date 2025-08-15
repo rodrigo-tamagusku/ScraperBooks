@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Xml;
 
 namespace ScraperBooks.Tests
 {
@@ -69,7 +70,13 @@ namespace ScraperBooks.Tests
                 Assert.That(xml.Length, Is.AtLeast(10), "Provavelmente não converteu");
                 Assert.That(xml.StartsWith("<?xml version="), "Não possui o início de xml");
                 Assert.That(json.Length, Is.AtLeast(10), "Provavelmente não converteu");
-                Assert.That(json.StartsWith("[{\"Titulo\":\""), "Não possui o início de json");
+                string inicioJson = "[\r\n  {\r\n    \"Titulo\": ";
+                Assert.That(json.StartsWith(inicioJson), "Não possui o início de json");
+                XmlDocument xmlDocument = Conversor.GeraXmlDocument(xml);
+                Conversor.SalvaXmlDocument(xmlDocument);
+                Assert.That(xmlDocument.InnerText.Length, Is.AtLeast(10), "Provavelmente não converteu para xml document");
+                Assert.That(xmlDocument.InnerXml.StartsWith("<?xml version="), "Não possui o início de xml document");
+
             });
             HttpStatusCode resultado = geradorHttp.EnviaPost(json);
             Assert.That(resultado, Is.EqualTo(HttpStatusCode.OK), "Ocorreu algum erro no Post");
