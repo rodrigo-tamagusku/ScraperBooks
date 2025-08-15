@@ -56,8 +56,10 @@ public class GeradorHttp
     public List<ProdutoLivro> CarregaTodosProdutos()
     {
         List<ProdutoLivro> produtos = new();
-        for (int indice = 0; indice < this.Categorias.Count; indice++)
+        int quantidadeCategorias = this.Categorias.Count;
+        for (int indice = 0; indice < quantidadeCategorias; indice++)
         {
+            Console.WriteLine($"[{DateTime.Now}] [{indice * 100/quantidadeCategorias}% completo] Processando Categoria {indice} de {quantidadeCategorias}.");
             produtos.AddRange(this.CarregaUmaCategoria(indice));
         }
         return produtos;
