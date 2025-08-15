@@ -19,6 +19,15 @@ namespace ScraperBooks.Tests
         }
 
         [Test]
+        public void CarregaTudo()
+        {
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "");
+            Environment.SetEnvironmentVariable("FILTRO_PRECO_MAXIMO", "");
+            Environment.SetEnvironmentVariable("FILTRO_RATING", "");
+            Rotinas.FluxoCompleto();
+        }
+
+        [Test]
         public void CarregaCategorias()
         {
             Environment.SetEnvironmentVariable("FILTRO_PRECO_MINIMO", "15");
@@ -87,7 +96,7 @@ namespace ScraperBooks.Tests
                 Conversor.SalvaXmlDocument(xmlDocument);
                 Assert.That(xmlDocument.InnerText.Length, Is.AtLeast(10), "Provavelmente não converteu para xml document");
                 Assert.That(xmlDocument.InnerXml.StartsWith("<?xml version="), "Não possui o início de xml document");
-                Conversor.SalvaTexto(json,"books.json");
+                Conversor.SalvaTexto(json, "books.json");
 
             });
             HttpStatusCode resultado = geradorHttp.EnviaPost(json);

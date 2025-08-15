@@ -97,7 +97,7 @@ public class GeradorHttp : IGeradorHttp
                 Preco = Conversor.ConvertePreco(preco),
                 Rating = Conversor.ConverteRating(ratingEstrelas),
                 Categoria = categoria.Value.Key,
-                URL = Environment.GetEnvironmentVariable("URL_BOOKS") + categoria.Value.Value
+                URL = produtoAtual + paginaAtual
             };
             if (Conversor.ValidaFiltros(produtoLivro))
             {
