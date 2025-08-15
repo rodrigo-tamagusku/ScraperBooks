@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "ScraperBooks": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "URL_BOOKS": "https://books.toscrape.com/",
+        "ALGUMA_CATEGORIA": "Sequential Art",
+        "FILTRO_PRECO_MINIMO": "15",
+        "FILTRO_PRECO_MAXIMO": "35",
+        "FILTRO_RATING": "4"
+      },
+      "hotReloadEnabled": false
+    }
+  }
+}
